@@ -28,6 +28,7 @@ bool CSVHandler::insertPacket(const CCSDS_Packet &packet, const string& fileUUID
         }
     }
     std::string filePath = directoryPath + "/" + filename;
+    LOG_INFO << "CSV File Path: " << filePath;
     // Open file in append mode
     std::ofstream csvFile(filePath, std::ios::app);
     if (!csvFile.is_open()) {
