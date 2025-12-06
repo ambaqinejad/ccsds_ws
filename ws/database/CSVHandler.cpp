@@ -8,6 +8,7 @@
 #include <drogon/drogon.h>
 #include <filesystem>
 #include "helpers/EnvHelper.h"
+#include "helpers/Constants.h"
 #include <chrono>
 using namespace std::chrono;
 namespace fs = std::filesystem;
@@ -17,7 +18,7 @@ CSVHandler::CSVHandler() = default;
 bool CSVHandler::insertPacket(const CCSDS_Packet &packet, const string& fileUUID) {
     auto start = high_resolution_clock::now();
     string directoryBasePath = EnvHelper::readEnvVariable("DOCUMENT_ROOT",
-                                          "/home/ambaqinejad/Desktop/drogon_ccsds/ccsds_final_project/ws/public");
+                                          Constants::DEFAULT_DOCUMENT_ROOT);
     std::string filename = "SID" + std::to_string(packet.sid) + ".csv";
     std::string directoryPath = directoryBasePath + "/" + fileUUID;
     if (!fs::exists(directoryPath)) {

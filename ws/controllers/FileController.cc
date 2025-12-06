@@ -29,7 +29,7 @@ void FileController::uploadFile(const HttpRequestPtr &req, std::function<void(co
     file.setFileName(fileName);
     file.save();
     string documentRoot = EnvHelper::readEnvVariable("DOCUMENT_ROOT",
-                                     "/home/ambaqinejad/Desktop/drogon_ccsds/ccsds_final_project/ws/public");
+                                     Constants::DEFAULT_DOCUMENT_ROOT);
     string uploadPath = documentRoot + "/uploads";
     string filePath = uploadPath + "/" + file.getFileName();
     msg["fileUUID"] = fileUUID;

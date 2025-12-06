@@ -8,6 +8,7 @@
 #include "helpers/ClientCommunicationHelper.h"
 #include <filesystem>
 #include "helpers/EnvHelper.h"
+#include "helpers/Constants.h"
 
 namespace fs = std::filesystem;
 
@@ -215,7 +216,7 @@ PacketController::downloadCSVFile(const HttpRequestPtr &req, function<void(const
     string sid = req->getParameter("sid");
     string fileUUID = req->getParameter("fileUUID");
     string directoryBasePath = EnvHelper::readEnvVariable("DOCUMENT_ROOT",
-                                          "/home/ambaqinejad/Desktop/drogon_ccsds/ccsds_final_project/ws/public");
+                                          Constants::DEFAULT_DOCUMENT_ROOT);
     std::string filename = "SID" + sid + ".csv";
     std::string directoryPath = directoryBasePath + "/" + fileUUID;
     if (!fs::exists(directoryPath)) {

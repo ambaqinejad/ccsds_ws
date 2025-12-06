@@ -10,7 +10,7 @@
 class Constants {
 public:
     // PATH
-    inline static const std::string DEFAULT_DOCUMENT_ROOT = "/home/ambaqinejad/Desktop/drogon_ccsds/ccsds_final_project/ws/public";
+    inline static const std::string DEFAULT_DOCUMENT_ROOT = "/home/ambaqinejad/Desktop/drogon_ccsds/ccsds_ws/ws/public";
     inline static const std::string DEFAULT_UPLOAD_DIR = "/uploads";
 
     // SERVER ERROR
