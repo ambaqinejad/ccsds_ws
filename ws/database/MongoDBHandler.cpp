@@ -95,7 +95,8 @@ bool MongoDBHandler::loadStructure() {
     auto filter = document{} << "is_current" << true << finalize;
     auto result = history_collection.find_one(filter.view());
     if (result && (*result)["collection_name"]) {
-        LOG_INFO << "Name: " << (*result)["collection_name"].get_string().value;
+        LOG_INFO << "Name: "
+                 << std::string{(*result)["collection_name"].get_string().value};
         mongocxx::collection structure_collection = database_[(*result)["collection_name"].get_string().value];
         auto cursor = structure_collection.find({});
         MongoDBHandler::ccsds_structure_ = nlohmann::ordered_json::array();

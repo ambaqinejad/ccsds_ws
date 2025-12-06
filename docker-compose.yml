@@ -9,14 +9,14 @@ services:
     working_dir: /home/ccsds_source/ccsds_final_project/ws/build
     # entrypoint: /bin/true
     restart: always
-    command: ["/home/ccsds_source/ccsds_final_project/api/build/api"]
+    command: ["/home/ccsds_source/ccsds_final_project/ws/build/ws"]
     ports:
       - "5000:5000"
     networks:
       - ccsds_network
     environment:
       - MONGODB_URI=mongodb://192.168.102.94:27017
-      - DOCUMENT_ROOT=/home/ambaqinejad/Desktop/drogon_ccsds/ccsds_final_project/ws/public
+      - DOCUMENT_ROOT=/home/ccsds_source/ccsds_final_project/ws/public
       - DEFAULT_STRUCTURE_FILE_PATH=uploads/default_structure.json
     deploy:
       resources:
