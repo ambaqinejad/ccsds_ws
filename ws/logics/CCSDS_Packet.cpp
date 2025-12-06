@@ -25,6 +25,7 @@ CCSDS_Packet CCSDS_Packet::deserialize_packet(vector<uint8_t> &chunk) {
         CCSDS_Packet packet;
         size_t offset = 0;
         size_t bitOffset = 0;
+        parsedData = Json::objectValue;
 
         auto read_uint16 = [&](size_t &offset) {
             uint16_t value;
@@ -267,7 +268,7 @@ uint8_t CCSDS_Packet::extractBits(const uint8_t *data, size_t &byteOffset, size_
 template<typename T>
 void CCSDS_Packet::mapPayloadToMeaningfulData(size_t offset, const std::string &fieldName) {
     T value = readBigEndian<T>(payload.data() + offset);
-    parsedData[fieldName] = value; // Construct FieldValue implicitly
+    parsedData[fieldName] = value;
 }
 
 template<typename T>
@@ -342,7 +343,3 @@ T CCSDS_Packet::readBigEndian(const uint8_t* data) {
 //    // floats/doubles stay AS-IS
 //    return value;
 //}
-
-
-
-
