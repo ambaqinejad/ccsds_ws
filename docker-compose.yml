@@ -9,7 +9,7 @@ services:
     working_dir: /home/ccsds_source/ccsds_final_project/ws/build
     # entrypoint: /bin/true
     restart: always
-    command: ["/home/ccsds_source/ccsds_final_project/ws/build/ws"]
+    command: ["/home/ccsds_source/ccsds_final_project/ws/build/final-project"]
     ports:
       - "5000:5000"
     networks:

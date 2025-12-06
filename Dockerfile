@@ -73,4 +73,4 @@ RUN cd ccsds_final_project && \
     make -j$(nproc)
 
 
-CMD ["/home/ccsds_source/ccsds_final_project/ws/build/ws"]
+CMD ["/home/ccsds_source/ccsds_final_project/ws/build/final-project"]
