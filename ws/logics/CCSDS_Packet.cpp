@@ -17,15 +17,15 @@ CCSDS_Packet::CCSDS_Packet() {
     timestamp = 0;
     crc_fail_upload_map = 0;
     flash_address = 0;
+    parsedData = Json::nullValue;
 }
 
 CCSDS_Packet CCSDS_Packet::deserialize_packet(vector<uint8_t> &chunk) {
     try {
-
         CCSDS_Packet packet;
         size_t offset = 0;
         size_t bitOffset = 0;
-        parsedData = Json::objectValue;
+        parsedData = Json::nullValue;
 
         auto read_uint16 = [&](size_t &offset) {
             uint16_t value;
@@ -343,3 +343,7 @@ T CCSDS_Packet::readBigEndian(const uint8_t* data) {
 //    // floats/doubles stay AS-IS
 //    return value;
 //}
+
+
+
+

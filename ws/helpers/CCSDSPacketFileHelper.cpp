@@ -55,7 +55,7 @@ void CCSDSPacketFileHelper::processFile(const string &filePath, const std::strin
             }
             if (j - i == 127 && !is_chunked_in_inner_for) {
                 vector<uint8_t> chunk;
-                chunk.insert(chunk.begin(), buffer.begin() + i, buffer.begin() + j);
+                chunk.insert(chunk.begin(), buffer.begin() + i, buffer.begin() + j + 1);
                 chunks.push_back(chunk);
                 count_of_valid_chunks ++;
                 i = j - 1;
@@ -91,7 +91,8 @@ void CCSDSPacketFileHelper::parseData(std::vector<std::vector<uint8_t>> chunks, 
         // Process current batch
         for (size_t i = start; i < end; ++i) {
             auto startTime = high_resolution_clock::now();
-            CCSDS_Packet packet = packet.deserialize_packet(chunks[i]);
+            CCSDS_Packet packet{};
+            packet = packet.deserialize_packet(chunks[i]);
             auto endTime = high_resolution_clock::now();
             auto duration_us = duration_cast<microseconds>(endTime - startTime);
 
