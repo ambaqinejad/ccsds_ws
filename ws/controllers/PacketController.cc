@@ -98,7 +98,6 @@ void PacketController::persistAllPacketsInMongoDB(const HttpRequestPtr &req,
     auto packets = std::make_shared<std::vector<CCSDS_Packet>>(std::move(it->second));
 
     // Remove from the map immediately to free memory
-    CCSDSPacketFileHelper::uuidToSavedPacketsMapper.erase(it);
     lock.unlock(); // Release the lock
 
     LOG_INFO << "Starting MongoDB persistence for " << packets->size() << " packets";
