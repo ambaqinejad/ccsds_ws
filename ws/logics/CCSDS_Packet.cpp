@@ -17,7 +17,7 @@ CCSDS_Packet::CCSDS_Packet() {
     timestamp = 0;
     crc_fail_upload_map = 0;
     flash_address = 0;
-    parsedData = Json::nullValue;
+    parsedData = Json::objectValue;
 }
 
 CCSDS_Packet CCSDS_Packet::deserialize_packet(vector<uint8_t> &chunk) {
@@ -25,7 +25,7 @@ CCSDS_Packet CCSDS_Packet::deserialize_packet(vector<uint8_t> &chunk) {
         CCSDS_Packet packet;
         size_t offset = 0;
         size_t bitOffset = 0;
-        parsedData = Json::nullValue;
+        parsedData = Json::objectValue;
 
         auto read_uint16 = [&](size_t &offset) {
             uint16_t value;
