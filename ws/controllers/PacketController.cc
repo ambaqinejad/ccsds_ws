@@ -96,7 +96,7 @@ void PacketController::persistAllPacketsInMongoDB(const HttpRequestPtr &req,
     }
 
     // MOVE the data instead of copying - this is nearly instantaneous
-    auto packets = std::make_shared<std::vector<CCSDS_Packet>>(std::move(it->second));
+    auto packets = std::make_shared<std::vector<CCSDS_Packet>>(it->second);  // copy
 
     // Remove from the map immediately to free memory
     lock.unlock(); // Release the lock
