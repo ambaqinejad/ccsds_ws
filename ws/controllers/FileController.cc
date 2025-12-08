@@ -1,7 +1,8 @@
 #include "FileController.h"
+
+#include <fstream>
 #include <drogon/drogon.h>
 #include <thread>
-#include <iostream>
 #include "helpers/CCSDSPacketFileHelper.h"
 #include "helpers/UIDGeneratorHelper.h"
 #include "helpers/EnvHelper.h"
@@ -15,7 +16,7 @@ void FileController::uploadFile(const HttpRequestPtr &req, std::function<void(co
     if (fileUpload.parse(req) != 0 || fileUpload.getFiles().size() != 1)
     {
         auto resp = HttpResponse::newHttpResponse();
-        resp->setBody("Must only be one file");
+        resp->setBody(Constants::MUST_ONLY_BE_ONE_FILE);
         resp->setStatusCode(k403Forbidden);
         callback(resp);
         return;
@@ -30,13 +31,13 @@ void FileController::uploadFile(const HttpRequestPtr &req, std::function<void(co
     file.save();
     string documentRoot = EnvHelper::readEnvVariable("DOCUMENT_ROOT",
                                      Constants::DEFAULT_DOCUMENT_ROOT);
-    string uploadPath = documentRoot + "/uploads";
+    string uploadPath = documentRoot + Constants::DEFAULT_UPLOAD_DIR;;
     string filePath = uploadPath + "/" + file.getFileName();
     msg["fileUUID"] = fileUUID;
-    msg["message"] = "The uploaded file has been saved";
+    msg["message"] = Constants::UPLOADED_FILE_HAVE_BEEN_SAVED;
     auto resp = HttpResponse::newHttpJsonResponse(msg);
     thread([filePath, fileUUID]() { CCSDSPacketFileHelper::processFile(filePath, fileUUID); }).detach();
-    LOG_INFO << "The uploaded file has been saved to the " + uploadPath;
+    LOG_INFO << Constants::UPLOADED_FILE_HAVE_BEEN_SAVED_TO_THE + uploadPath;
     callback(resp);
 }
 
@@ -62,7 +63,7 @@ void FileController::startUpload(const HttpRequestPtr &req,
     }
     catch (const std::exception &e) {
         ControllerErrorHelper::sendError(std::move(callback), k500InternalServerError,
-                                         "Error in starting upload.");
+                                         Constants::ERROR_IN_STARTING_UPLOAD);
     }
 }
 
@@ -72,7 +73,7 @@ void FileController::uploadChunk(const HttpRequestPtr &req, std::function<void(c
         MultiPartParser fileUpload;
         if (fileUpload.parse(req) != 0) {
             auto resp = HttpResponse::newHttpResponse();
-            resp->setBody("Invalid upload data");
+            resp->setBody(Constants::INVALID_UPLOAD_DATA);
             resp->setStatusCode(k400BadRequest);
             callback(resp);
             return;
@@ -82,7 +83,7 @@ void FileController::uploadChunk(const HttpRequestPtr &req, std::function<void(c
 
         if (fileUpload.getFiles().size() != 1) {
             auto resp = HttpResponse::newHttpResponse();
-            resp->setBody("No file chunk found");
+            resp->setBody(Constants::NO_FILE_CHUNK_FOUND);
             resp->setStatusCode(k400BadRequest);
             callback(resp);
             return;
@@ -127,7 +128,7 @@ void FileController::finalizeUpload(const HttpRequestPtr &req, std::function<voi
 
     if (fileUUIDToCorrespondingDirPath_.find(fileUUID) == fileUUIDToCorrespondingDirPath_.end()) {
         auto resp = HttpResponse::newHttpResponse();
-        resp->setBody("Upload session not found");
+        resp->setBody(Constants::UPLOAD_SESSION_NOT_FOUND);
         resp->setStatusCode(k404NotFound);
         callback(resp);
         return;
@@ -145,10 +146,10 @@ void FileController::finalizeUpload(const HttpRequestPtr &req, std::function<voi
     std::thread([fileUUID, fileDir, totalChunks]() {
         string documentRoot = EnvHelper::readEnvVariable("DOCUMENT_ROOT",
                                                          Constants::DEFAULT_DOCUMENT_ROOT);
-        string finalPath = documentRoot + "/uploads/" + fileUUID + ".bin";
+        string finalPath = documentRoot + Constants::DEFAULT_UPLOAD_DIR + "/" + fileUUID + ".bin";
         std::ofstream outputFile(finalPath, std::ios::binary);
         if (!outputFile) {
-            LOG_ERROR << "Failed to create output file: " << finalPath;
+            LOG_ERROR << Constants::FAILED_TO_CREATE_OUTPUT_FILE << finalPath;
             return;
         }
         // Combine all chunks
@@ -157,7 +158,7 @@ void FileController::finalizeUpload(const HttpRequestPtr &req, std::function<voi
             std::ifstream chunkFile(chunkPath, std::ios::binary);
 
             if (!chunkFile) {
-                LOG_ERROR << "Failed to read chunk: " << chunkPath;
+                LOG_ERROR << Constants::FAILED_TO_READ_CHUNK << chunkPath;
                 outputFile.close();
                 std::filesystem::remove(finalPath);
                 return;
@@ -181,7 +182,7 @@ void FileController::finalizeUpload(const HttpRequestPtr &req, std::function<voi
 
     Json::Value response;
     response["fileUUID"] = fileUUID;
-    response["message"] = "File upload completed and processing started";
+    response["message"] = Constants::FILE_UPLOAD_COMPLETED_AND_PROCESSING_STARTED;
 
     auto resp = HttpResponse::newHttpJsonResponse(response);
     callback(resp);

@@ -18,10 +18,13 @@ public:
     inline static const std::string SERVER_COULD_NOT_START_PUBLIC_DIR = "Websocket server could not start because it can not create public directory.";
     inline static const std::string SERVER_COULD_NOT_START_UPLOAD_DIR = "Websocket server could not start because it can not create upload directory.";
     inline static const std::string STRUCTURE_COULD_NOT_LOAD_FROM_DB_TO_RAM = "Structure could not load from DB to RAM!";
+    inline static const std::string FAILED_TO_CREATE_OUTPUT_FILE = "Failed to create output file: ";
+    inline static const std::string FAILED_TO_READ_CHUNK = "Failed to read chunk: ";
 
     // SERVER INFO
     inline static const std::string SERVER_START_ON_PORT = "Starting WebSocket server on port ";
     inline static const std::string STRUCTURE_LOADED_FROM_DB_TO_RAM = "Structure loaded successfully from DB to RAM!";
+    inline static const std::string UPLOADED_FILE_HAVE_BEEN_SAVED_TO_THE = "The uploaded file has been saved to the ";
 
     // RESPONSE HEADER
     inline static const std::string ACCESS_CONTROL_ALLOW_ORIGIN_KEY = "Access-Control-Allow-Origin";
@@ -32,7 +35,7 @@ public:
     inline static const std::string ALL = "*";
 
     // MONGODB
-    inline static const std::string MONGODB_DEFAULT_URI = "mongodb://192.168.102.94:27017";
+    inline static const std::string MONGODB_DEFAULT_URI = "mongodb://192.168.0.100:27017";
     inline static const std::string DEFAULT_DB_NAME = "CCSDS_DB";
     inline static const std::string DEFAULT_COLLECTION_NAME = "CCSDS_Structure";
     inline static const std::string DEFAULT_HISTORY_COLLECTION_NAME = "CCSDS_STRUCTURE_HISTORY";
@@ -50,6 +53,22 @@ public:
     inline static const std::string PACKET_HEADER_KEY_CRC_FAIL_UPLOAD_MAP = "crc_fail_upload_map";
     inline static const std::string PACKET_HEADER_KEY_FLASH_ADDRESS = "flash_address";
 
+    // API
+    inline static const std::string FILE_UPLOAD = "/upload";
+    inline static const std::string FILE_START_UPLOAD = "/startUpload";
+    inline static const std::string FILE_UPLOAD_CHUNK = "/uploadChunk";
+    inline static const std::string FILE_FINALIZE_UPLOAD = "/finalizeUpload";
+
+    // API_ERROR
+    inline static const std::string MUST_ONLY_BE_ONE_FILE = "Must only be one file";
+    inline static const std::string ERROR_IN_STARTING_UPLOAD = "Error in starting upload.";
+    inline static const std::string INVALID_UPLOAD_DATA = "Invalid upload data";
+    inline static const std::string NO_FILE_CHUNK_FOUND = "No file chunk found";
+    inline static const std::string UPLOAD_SESSION_NOT_FOUND = "Upload session not found";
+
+    // API_RESPONSE
+    inline static const std::string UPLOADED_FILE_HAVE_BEEN_SAVED = "The uploaded file has been saved";
+    inline static const std::string FILE_UPLOAD_COMPLETED_AND_PROCESSING_STARTED = "File upload completed and processing started";
 
 };
 #endif //FINAL_PROJECT_CONSTANTS_H
