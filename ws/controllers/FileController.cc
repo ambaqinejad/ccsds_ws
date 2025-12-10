@@ -3,6 +3,8 @@
 #include <fstream>
 #include <drogon/drogon.h>
 #include <thread>
+
+#include "database/MongoDBHandler.h"
 #include "helpers/CCSDSPacketFileHelper.h"
 #include "helpers/UIDGeneratorHelper.h"
 #include "helpers/EnvHelper.h"
@@ -12,6 +14,9 @@
 // this class is for working with file that is uploaded to the server for processing
 // ambaqinejad
 void FileController::uploadFile(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    if (MongoDBHandler::ccsds_structure_.empty()) {
+        return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, Constants::STRUCTURE_NOT_FOUND);
+    }
     MultiPartParser fileUpload;
     if (fileUpload.parse(req) != 0 || fileUpload.getFiles().size() != 1)
     {
