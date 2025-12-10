@@ -18,10 +18,7 @@ int main(int argc, const char *argv[]) {
                           Constants::DEFAULT_DOCUMENT_ROOT);
     string uploadPath = documentRoot + Constants::DEFAULT_UPLOAD_DIR;
     MongoDBHandler dbHandler;
-    if (!dbHandler.loadStructure()) {
-        LOG_INFO << Constants::SERVER_COULD_NOT_START_STRUCTURE;
-        return 0;
-    }
+    dbHandler.loadStructure();
 
     if (!fs::exists(documentRoot)) {
         if (!fs::create_directory(documentRoot)) {
