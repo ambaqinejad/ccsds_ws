@@ -236,6 +236,9 @@ PacketController::downloadCSVFile(const HttpRequestPtr &req, function<void(const
 void
 PacketController::getSidsList(const HttpRequestPtr &req, function<void(const HttpResponsePtr &)> &&callback,
                               const string &fileUUID) {
+    if (MongoDBHandler::ccsds_structure_.empty()) {
+        return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, Constants::STRUCTURE_NOT_FOUND);
+    }
     auto it = CCSDSPacketFileHelper::uuidToSids.find(fileUUID);
     if (it == CCSDSPacketFileHelper::uuidToSids.end()) {
         return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, "File UUID not found.");
