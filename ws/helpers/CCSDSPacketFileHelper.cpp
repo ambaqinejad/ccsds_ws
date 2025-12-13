@@ -37,6 +37,10 @@ void CCSDSPacketFileHelper::processFile(const string &filePath, const std::strin
     int count_of_valid_chunks = 0;
     std::vector<std::vector<uint8_t>> chunks;
     for (size_t i = 0; i < buffer.size() - 1; ++i) {
+        if (ClientCommunicationHelper::shouldStopProcessing) {
+            chunks.clear();
+            return;
+        }
         if (buffer[i] == 0x48 && buffer[i + 1] == 0x48) {
             size_t j = 0;
             bool is_chunked_in_inner_for = false;
@@ -67,6 +71,7 @@ void CCSDSPacketFileHelper::processFile(const string &filePath, const std::strin
 
 std::map<std::string, std::vector<CCSDS_Packet>> CCSDSPacketFileHelper::uuidToSavedPacketsMapper;
 std::map<std::string, std::set<uint8_t >> CCSDSPacketFileHelper::uuidToSids;
+bool ClientCommunicationHelper::shouldStopProcessing;
 void CCSDSPacketFileHelper::parseData(std::vector<std::vector<uint8_t>> chunks, int count_of_valid_chunks, const std::string &fileUUID) {
     const size_t BATCH_SIZE = 50000; // Process 50K packets at a time
     int eachTimeNotifyClients = count_of_valid_chunks / ClientCommunicationHelper::progressDivider != 0 ?
@@ -90,6 +95,11 @@ void CCSDSPacketFileHelper::parseData(std::vector<std::vector<uint8_t>> chunks, 
 
         // Process current batch
         for (size_t i = start; i < end; ++i) {
+            if (ClientCommunicationHelper::shouldStopProcessing) {
+                batch.clear();
+                allPackets.clear();
+                return;
+            }
             auto startTime = high_resolution_clock::now();
             CCSDS_Packet packet{};
             packet = packet.deserialize_packet(chunks[i]);

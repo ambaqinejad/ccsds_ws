@@ -10,7 +10,7 @@
 class Constants {
 public:
     // PATH
-    inline static const std::string DEFAULT_DOCUMENT_ROOT = "/home/ambaqinejad/Desktop/drogon_ccsds/ccsds_ws/ws/public";
+    inline static const std::string DEFAULT_DOCUMENT_ROOT = "/home/ambaqinejad/Desktop/drogon_ccsds/ccsds_ws2/ws/public";
     inline static const std::string DEFAULT_UPLOAD_DIR = "/uploads";
 
     // SERVER ERROR
@@ -35,7 +35,7 @@ public:
     inline static const std::string ALL = "*";
 
     // MONGODB
-    inline static const std::string MONGODB_DEFAULT_URI = "mongodb://192.168.0.100:27017";
+    inline static const std::string MONGODB_DEFAULT_URI = "mongodb://192.168.102.94:27017";
     inline static const std::string DEFAULT_DB_NAME = "CCSDS_DB";
     inline static const std::string DEFAULT_COLLECTION_NAME = "CCSDS_Structure";
     inline static const std::string DEFAULT_HISTORY_COLLECTION_NAME = "CCSDS_STRUCTURE_HISTORY";
@@ -65,6 +65,7 @@ public:
     inline static const std::string INVALID_UPLOAD_DATA = "Invalid upload data";
     inline static const std::string NO_FILE_CHUNK_FOUND = "No file chunk found";
     inline static const std::string UPLOAD_SESSION_NOT_FOUND = "Upload session not found";
+    inline static const std::string STRUCTURE_NOT_FOUND = "Structure not found";
 
     // API_RESPONSE
     inline static const std::string UPLOADED_FILE_HAVE_BEEN_SAVED = "The uploaded file has been saved";

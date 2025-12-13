@@ -14,6 +14,8 @@
 #include "helpers/EnvHelper.h"
 #include "helpers/Constants.h"
 #include <chrono>
+
+#include "helpers/ClientCommunicationHelper.h"
 using namespace std::chrono;
 
 MongoDBHandler::MongoDBHandler() {

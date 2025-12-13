@@ -9,10 +9,12 @@ void FileWebSocket::handleNewMessage(const WebSocketConnectionPtr& wsConnPtr, st
 void FileWebSocket::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr& wsConnPtr)
 {
     // write your application logic here
-    cout << "New Web Socket Connection" << endl;
+    LOG_INFO << "New Web Socket Connection";
     ClientCommunicationHelper::clients.insert(wsConnPtr);
+    ClientCommunicationHelper::shouldStopProcessing = false;
 }
 
 void FileWebSocket::handleConnectionClosed(const WebSocketConnectionPtr& wsConnPtr) {
-
+    ClientCommunicationHelper::clients.erase(wsConnPtr);
+    ClientCommunicationHelper::shouldStopProcessing = true;
 }
