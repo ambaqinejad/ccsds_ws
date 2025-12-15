@@ -109,6 +109,7 @@ void PacketController::persistAllPacketsInMongoDB(const HttpRequestPtr &req,
             int eachTimeNotifyClients = (int) packets->size() / ClientCommunicationHelper::progressDivider != 0 ?
                                         (int) packets->size() / ClientCommunicationHelper::progressDivider : 1;
             for (size_t i = 0; i < packets->size(); ++i) {
+
                 auto packet = packets->at(i);
                 dbHandler.insertPacket(packet);
                 if (i % eachTimeNotifyClients == 0) {
@@ -163,6 +164,7 @@ void PacketController::persistAllPacketsInMongoDBBasedOnSID(const HttpRequestPtr
                                     (int) packetsCopy->size() / ClientCommunicationHelper::progressDivider : 1;
 
         for (size_t i = 0; i < packetsCopy->size(); ++i) {
+
             auto packet = packetsCopy->at(i);
             dbHandler.insertPacket(packet);
             if (i % eachTimeNotifyClients == 0) {
@@ -192,6 +194,7 @@ void PacketController::persistAllPacketsInCSVFile(const HttpRequestPtr &req,
                                         (int) packetsCopy->size() / ClientCommunicationHelper::progressDivider : 1;
 
             for (size_t i = 0; i < packetsCopy->size(); ++i) {
+
                 auto packet = packetsCopy->at(i);
                 bool isSuccessful = CSVHandler::insertPacket(packet, fileUUID);
                 if (i % eachTimeNotifyClients == 0) {
@@ -309,6 +312,7 @@ void PacketController::persistAllPacketsInCSVFileBasedOnSID(const HttpRequestPtr
                                         (int) packetsCopy->size() / ClientCommunicationHelper::progressDivider : 1;
 
             for (size_t i = 0; i < packetsCopy->size(); ++i) {
+
                 auto packet = packetsCopy->at(i);
                 bool isSuccessful = CSVHandler::insertPacket(packet, fileUUID);
                 if (i % eachTimeNotifyClients == 0) {
