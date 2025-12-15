@@ -15,6 +15,7 @@ void FileWebSocket::handleNewConnection(const HttpRequestPtr &req, const WebSock
 }
 
 void FileWebSocket::handleConnectionClosed(const WebSocketConnectionPtr& wsConnPtr) {
+    LOG_INFO << "Socket closed";
     ClientCommunicationHelper::clients.erase(wsConnPtr);
     ClientCommunicationHelper::shouldStopProcessing = true;
 }
