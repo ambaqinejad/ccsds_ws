@@ -22,6 +22,8 @@ MongoDBHandler::MongoDBHandler() {
     static mongocxx::instance instance{}; // Required once per application
     std::string uri = EnvHelper::readEnvVariable("MONGODB_URI",
                                  Constants::MONGODB_DEFAULT_URI);
+    std::string database_name = EnvHelper::readEnvVariable("DB_NAME",
+                                 Constants::DEFAULT_DB_NAME);
     LOG_INFO << "DATABASE URI -------> " << uri;
     client_ = mongocxx::client{mongocxx::uri{uri}};
     database_ = client_[Constants::DEFAULT_DB_NAME];
@@ -34,7 +36,9 @@ bool MongoDBHandler::insertPacket(const CCSDS_Packet &packet) {
     try {
         auto start = high_resolution_clock::now();
         mongocxx::collection collection;
-        std::string collection_name = "SID" + std::to_string(packet.sid);
+        // std::string collection_name = "SID" + std::to_string(packet.sid);
+        std::string collection_name = EnvHelper::readEnvVariable("PAYLOAD_COLLECTION_NAME",
+                          Constants::DEFAULT_PAYLOAD_COLLECTION_NAME);;
         collection = database_[collection_name];
         bsoncxx::builder::basic::document doc{};
         insertHeader(doc, packet);
@@ -44,7 +48,7 @@ bool MongoDBHandler::insertPacket(const CCSDS_Packet &packet) {
 
         // Step 3: Parse JSON string into BSON
         bsoncxx::document::value subDocument = bsoncxx::from_json(jsonStr);
-        doc.append(bsoncxx::builder::basic::kvp("data", subDocument));
+        doc.append(bsoncxx::builder::basic::kvp("Fields", subDocument));
         collection.insert_one(doc.view());
         auto end = high_resolution_clock::now();
         auto duration_us = duration_cast<microseconds>(end - start);  // microseconds
@@ -69,6 +73,8 @@ void MongoDBHandler::insertHeader(bsoncxx::builder::basic::document &document, c
     document.append(
             bsoncxx::builder::basic::kvp(Constants::PACKET_HEADER_KEY_CRC_FAIL_UPLOAD_MAP, static_cast<int64_t>(packet.crc_fail_upload_map)));
     document.append(bsoncxx::builder::basic::kvp(Constants::PACKET_HEADER_KEY_FLASH_ADDRESS, static_cast<int>(packet.flash_address)));
+    document.append(bsoncxx::builder::basic::kvp(Constants::PACKET_HEADER_KEY_TRACK_ID, -100));
+    document.append(bsoncxx::builder::basic::kvp(Constants::PACKET_HEADER_KEY_STATION_DATE_TIME, bsoncxx::types::b_date{chrono::system_clock::now()}));
 }
 
 void MongoDBHandler::insertStructure(nlohmann::ordered_json json) {
@@ -218,7 +224,7 @@ bool MongoDBHandler::insertAllPackets(const vector<CCSDS_Packet> &packets) {
             Json::StreamWriterBuilder writer;
             std::string jsonStr = Json::writeString(writer, packet.parsedData);
             bsoncxx::document::value subDocument = bsoncxx::from_json(jsonStr);
-            doc.append(bsoncxx::builder::basic::kvp("data", subDocument));
+            doc.append(bsoncxx::builder::basic::kvp("Fields", subDocument));
 
             documentsByCollection[collection_name].push_back(doc.extract());
         }
