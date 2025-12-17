@@ -1,6 +1,7 @@
 #include <drogon/drogon.h>
 #include <iostream>
 #include "database/MongoDBHandler.h"
+#include "helpers/AppConfiguration.h"
 #include "helpers/StructureHelper.h"
 
 using namespace std;
@@ -38,36 +39,7 @@ int main(int argc, const char *argv[]) {
     if (argc > 1) port = stoi(argv[1]);
     LOG_INFO << Constants::SERVER_START_ON_PORT << port;
     auto &app = drogon::app();
-
-    // 1️⃣ Handle OPTIONS (CORS preflight)
-    app.registerPreRoutingAdvice([](const drogon::HttpRequestPtr &req,
-                                    drogon::AdviceCallback &&acb,
-                                    drogon::AdviceChainCallback &&accb) {
-        if (req->getMethod() == drogon::Options) {
-            auto resp = drogon::HttpResponse::newHttpResponse();
-            resp->addHeader(Constants::ACCESS_CONTROL_ALLOW_ORIGIN_KEY, Constants::ALL);
-            resp->addHeader(Constants::ACCESS_CONTROL_ALLOW_METHOD_KEY, Constants::ACCESS_CONTROL_ALLOW_ALL_METHOD_VALUE);
-            resp->addHeader(Constants::ACCESS_CONTROL_ALLOW_HEADER_KEY, Constants::ACCESS_CONTROL_ALLOW_HEADER_VALUE);
-            resp->setStatusCode(drogon::k200OK);
-            acb(resp);  // Send immediate response for OPTIONS
-        } else {
-            accb();  // Continue normal routing
-        }
-    });
-
-    // 3️⃣ Add CORS headers to all valid responses
-    app.registerPostHandlingAdvice([](const drogon::HttpRequestPtr &req,
-                                      const drogon::HttpResponsePtr &resp) {
-        resp->addHeader(Constants::ACCESS_CONTROL_ALLOW_ORIGIN_KEY, Constants::ALL);
-        resp->addHeader(Constants::ACCESS_CONTROL_ALLOW_METHOD_KEY, Constants::ACCESS_CONTROL_ALLOW_ALL_METHOD_VALUE);
-        resp->addHeader(Constants::ACCESS_CONTROL_ALLOW_HEADER_KEY, Constants::ACCESS_CONTROL_ALLOW_HEADER_VALUE);
-    });
-
-    // 4️⃣ Configure Drogon app
-    app.setClientMaxBodySize(200 * 2000 * 2000)
-            .setUploadPath(uploadPath)
-            .addListener("0.0.0.0", port)
-            .setDocumentRoot(documentRoot)
-            .run();
+    AppConfiguration::configureCors(app);
+    AppConfiguration::configureServer(app, uploadPath, documentRoot, port);
     return 0;
 }
