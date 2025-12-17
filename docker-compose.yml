@@ -17,6 +17,7 @@ services:
     environment:
       - MONGODB_URI=mongodb://192.168.102.94:27017
       - DOCUMENT_ROOT=/home/ccsds_source/ccsds_final_project/ws/public
+      - DB_NAME=Parser
       - DEFAULT_STRUCTURE_FILE_PATH=uploads/default_structure.json
     deploy:
       resources:
