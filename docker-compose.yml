@@ -17,7 +17,10 @@ services:
     environment:
       - MONGODB_URI=mongodb://192.168.102.94:27017
       - DOCUMENT_ROOT=/home/ccsds_source/ccsds_final_project/ws/public
+      - UPLOAD_DIR=/home/ccsds_source/ccsds_final_project/ws/public/uploads
+      - CSV_DIR=/home/ccsds_source/ccsds_final_project/ws/public/csv
       - DB_NAME=Parser
+      - PAYLOAD_COLLECTION_NAME=PayloadSID
       - DEFAULT_STRUCTURE_FILE_PATH=uploads/default_structure.json
     deploy:
       resources:
@@ -29,3 +32,4 @@ services:
 networks:
   ccsds_network:
     driver: bridge
+
