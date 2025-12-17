@@ -1,6 +1,8 @@
 #include "FileWebSocket.h"
 #include "FileController.h"
 #include "helpers/ClientCommunicationHelper.h"
+#include "helpers/EnvHelper.h"
+#include "helpers/WorkingWithFileSystem.h"
 
 void FileWebSocket::handleNewMessage(const WebSocketConnectionPtr& wsConnPtr, std::string &&message, const WebSocketMessageType &type) {
 
@@ -17,5 +19,8 @@ void FileWebSocket::handleNewConnection(const HttpRequestPtr &req, const WebSock
 void FileWebSocket::handleConnectionClosed(const WebSocketConnectionPtr& wsConnPtr) {
     LOG_INFO << "Socket closed";
     ClientCommunicationHelper::clients.erase(wsConnPtr);
+    string uploadPath = EnvHelper::readEnvVariable("UPLOAD_DIR",
+                          Constants::DEFAULT_UPLOAD_DIR);
+    WorkingWithFileSystem::deleteFile(uploadPath, "");
     ClientCommunicationHelper::shouldStopProcessing = true;
 }

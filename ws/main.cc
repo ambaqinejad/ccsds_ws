@@ -17,7 +17,8 @@ namespace fs = std::filesystem;
 int main(int argc, const char *argv[]) {
     string documentRoot = EnvHelper::readEnvVariable("DOCUMENT_ROOT",
                           Constants::DEFAULT_DOCUMENT_ROOT);
-    string uploadPath = documentRoot + Constants::DEFAULT_UPLOAD_DIR;
+    string uploadPath = EnvHelper::readEnvVariable("UPLOAD_DIR",
+                          Constants::DEFAULT_UPLOAD_DIR);
     MongoDBHandler dbHandler;
     dbHandler.loadStructure();
 

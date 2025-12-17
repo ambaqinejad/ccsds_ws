@@ -11,7 +11,8 @@ class Constants {
 public:
     // PATH
     inline static const std::string DEFAULT_DOCUMENT_ROOT = "/home/ambaqinejad/Desktop/drogon_ccsds/ccsds_ws2/ws/public";
-    inline static const std::string DEFAULT_UPLOAD_DIR = "/uploads";
+    inline static const std::string DEFAULT_UPLOAD_DIR = "/home/ambaqinejad/Desktop/drogon_ccsds/ccsds_ws2/ws/public/uploads";
+    inline static const std::string DEFAULT_CSV_DIR = "/home/ambaqinejad/Desktop/drogon_ccsds/ccsds_ws2/ws/public/csv";
 
     // SERVER ERROR
     inline static const std::string SERVER_COULD_NOT_START_STRUCTURE = "Websocket server could not start because structure did not load.";
@@ -61,6 +62,7 @@ public:
     inline static const std::string FILE_START_UPLOAD = "/startUpload";
     inline static const std::string FILE_UPLOAD_CHUNK = "/uploadChunk";
     inline static const std::string FILE_FINALIZE_UPLOAD = "/finalizeUpload";
+    inline static const std::string DELETE_UPLOADED_FILE = "/deleteUploadedFile";
 
     // API_ERROR
     inline static const std::string MUST_ONLY_BE_ONE_FILE = "Must only be one file";
@@ -69,10 +71,12 @@ public:
     inline static const std::string NO_FILE_CHUNK_FOUND = "No file chunk found";
     inline static const std::string UPLOAD_SESSION_NOT_FOUND = "Upload session not found";
     inline static const std::string STRUCTURE_NOT_FOUND = "Structure not found";
+    inline static const std::string REQUIRED_FIELDS = "Please send all required fields.";
 
     // API_RESPONSE
     inline static const std::string UPLOADED_FILE_HAVE_BEEN_SAVED = "The uploaded file has been saved";
     inline static const std::string FILE_UPLOAD_COMPLETED_AND_PROCESSING_STARTED = "File upload completed and processing started";
+    inline static const std::string FILE_DELETED = "File deleted.";
 
 };
 #endif //FINAL_PROJECT_CONSTANTS_H

@@ -9,6 +9,7 @@
 #include <filesystem>
 #include "helpers/EnvHelper.h"
 #include "helpers/Constants.h"
+#include "helpers/WorkingWithFileSystem.h"
 
 namespace fs = std::filesystem;
 
@@ -232,6 +233,7 @@ PacketController::downloadCSVFile(const HttpRequestPtr &req, function<void(const
         LOG_ERROR << "Failed to open CSV file.";
         return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, "Failed to open CSV file.");
     }
+    WorkingWithFileSystem::deleteFile(directoryPath, filename);
     auto resp = HttpResponse::newFileResponse(filePath, filename);
     callback(resp);
 }

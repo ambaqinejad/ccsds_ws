@@ -10,6 +10,7 @@
 #include "helpers/EnvHelper.h"
 #include "helpers/Constants.h"
 #include "helpers/ControllerErrorHelper.h"
+#include "helpers/WorkingWithFileSystem.h"
 
 // this class is for working with file that is uploaded to the server for processing
 // ambaqinejad
@@ -34,9 +35,8 @@ void FileController::uploadFile(const HttpRequestPtr &req, std::function<void(co
     Json::Value msg;
     file.setFileName(fileName);
     file.save();
-    string documentRoot = EnvHelper::readEnvVariable("DOCUMENT_ROOT",
-                                     Constants::DEFAULT_DOCUMENT_ROOT);
-    string uploadPath = documentRoot + Constants::DEFAULT_UPLOAD_DIR;;
+    string uploadPath = EnvHelper::readEnvVariable("UPLOAD_DIR",
+                                     Constants::DEFAULT_UPLOAD_DIR);
     string filePath = uploadPath + "/" + file.getFileName();
     msg["fileUUID"] = fileUUID;
     msg["message"] = Constants::UPLOADED_FILE_HAVE_BEEN_SAVED;
@@ -55,9 +55,9 @@ void FileController::startUpload(const HttpRequestPtr &req,
         auto fileName = jsonBody["fileName"].asString();
         auto totalChunks = jsonBody["totalChunks"].asString();
         std::string fileUUID = UIDGeneratorHelper::generateUID();
-        string documentRoot = EnvHelper::readEnvVariable("DOCUMENT_ROOT",
-                                                         Constants::DEFAULT_DOCUMENT_ROOT);
-        string tempDir = documentRoot + Constants::DEFAULT_UPLOAD_DIR + "/" + fileUUID;
+        string uploadPath = EnvHelper::readEnvVariable("UPLOAD_DIR",
+                                                         Constants::DEFAULT_UPLOAD_DIR);
+        string tempDir = uploadPath + "/" + fileUUID;
         std::filesystem::create_directories(tempDir);
         fileUUIDToCorrespondingDirPath_[fileUUID] = tempDir;
         fileUUIDToCorrespondingTotalChunks_[fileUUID] = stoi(totalChunks);
@@ -149,9 +149,9 @@ void FileController::finalizeUpload(const HttpRequestPtr &req, std::function<voi
 
     // Reassemble file in background thread
     std::thread([fileUUID, fileDir, totalChunks]() {
-        string documentRoot = EnvHelper::readEnvVariable("DOCUMENT_ROOT",
-                                                         Constants::DEFAULT_DOCUMENT_ROOT);
-        string finalPath = documentRoot + Constants::DEFAULT_UPLOAD_DIR + "/" + fileUUID + ".bin";
+        string uploadPath = EnvHelper::readEnvVariable("UPLOAD_DIR",
+                                                         Constants::DEFAULT_UPLOAD_DIR);
+        string finalPath = uploadPath + "/" + fileUUID + ".bin";
         std::ofstream outputFile(finalPath, std::ios::binary);
         if (!outputFile) {
             LOG_ERROR << Constants::FAILED_TO_CREATE_OUTPUT_FILE << finalPath;
@@ -189,6 +189,27 @@ void FileController::finalizeUpload(const HttpRequestPtr &req, std::function<voi
     response["fileUUID"] = fileUUID;
     response["message"] = Constants::FILE_UPLOAD_COMPLETED_AND_PROCESSING_STARTED;
 
+    auto resp = HttpResponse::newHttpJsonResponse(response);
+    callback(resp);
+}
+
+void FileController::deleteUploadedFile(const HttpRequestPtr &req,
+    std::function<void(const HttpResponsePtr &)> &&callback) {
+    Json::Value jsonBody = req->getJsonObject() ? *req->getJsonObject() : Json::Value();
+    std::string fileUUID = jsonBody["fileUUID"].asString();
+    if (fileUUID == "") {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setBody(Constants::REQUIRED_FIELDS);
+        resp->setStatusCode(k404NotFound);
+        callback(resp);
+        return;
+    }
+    string uploadPath = EnvHelper::readEnvVariable("UPLOAD_DIR",
+                          Constants::DEFAULT_UPLOAD_DIR);;
+    WorkingWithFileSystem::deleteFile(uploadPath, fileUUID+".bin");
+    Json::Value response;
+    response["fileUUID"] = fileUUID;
+    response["message"] = Constants::FILE_DELETED;
     auto resp = HttpResponse::newHttpJsonResponse(response);
     callback(resp);
 }

@@ -43,6 +43,8 @@ add_executable(${PROJECT_NAME} main.cc
         helpers/Constants.h
         helpers/AppConfiguration.cpp
         helpers/AppConfiguration.h
+        helpers/WorkingWithFileSystem.cpp
+        helpers/WorkingWithFileSystem.h
 )
 
 # ##############################################################################
