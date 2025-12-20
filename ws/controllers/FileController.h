@@ -18,11 +18,13 @@ class FileController : public drogon::HttpController<FileController>
     ADD_METHOD_TO(FileController::startUpload, Constants::FILE_START_UPLOAD, Post);
     ADD_METHOD_TO(FileController::uploadChunk, Constants::FILE_UPLOAD_CHUNK, Post);
     ADD_METHOD_TO(FileController::finalizeUpload, Constants::FILE_FINALIZE_UPLOAD, Post);
+    ADD_METHOD_TO(FileController::deleteUploadedFile, Constants::DELETE_UPLOADED_FILE, Post);
     METHOD_LIST_END
     static void uploadFile(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback) ;
     static void startUpload(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback) ;
     static void uploadChunk(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback) ;
     static void finalizeUpload(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+    static void deleteUploadedFile(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 private:
     static std::mutex sessionsMutex_;
     static std::unordered_map<std::string, std::string> fileUUIDToCorrespondingDirPath_;

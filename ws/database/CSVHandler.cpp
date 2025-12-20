@@ -17,10 +17,10 @@ CSVHandler::CSVHandler() = default;
 
 bool CSVHandler::insertPacket(const CCSDS_Packet &packet, const string& fileUUID) {
     auto start = high_resolution_clock::now();
-    string directoryBasePath = EnvHelper::readEnvVariable("DOCUMENT_ROOT",
-                                          Constants::DEFAULT_DOCUMENT_ROOT);
+    string csvPath = EnvHelper::readEnvVariable("CSV_DIR",
+                                          Constants::DEFAULT_CSV_DIR);
     std::string filename = "SID" + std::to_string(packet.sid) + ".csv";
-    std::string directoryPath = directoryBasePath + "/" + fileUUID;
+    std::string directoryPath = csvPath + "/" + fileUUID;
     if (!fs::exists(directoryPath)) {
         if (!fs::create_directory(directoryPath)) {
             LOG_INFO << "Failed to create directory: " << directoryPath;

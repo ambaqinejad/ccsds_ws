@@ -17,7 +17,10 @@ namespace fs = std::filesystem;
 int main(int argc, const char *argv[]) {
     string documentRoot = EnvHelper::readEnvVariable("DOCUMENT_ROOT",
                           Constants::DEFAULT_DOCUMENT_ROOT);
-    string uploadPath = documentRoot + Constants::DEFAULT_UPLOAD_DIR;
+    string uploadPath = EnvHelper::readEnvVariable("UPLOAD_DIR",
+                          Constants::DEFAULT_UPLOAD_DIR);
+    string csvPath = EnvHelper::readEnvVariable("CSV_DIR",
+                          Constants::DEFAULT_CSV_DIR);
     MongoDBHandler dbHandler;
     dbHandler.loadStructure();
 
@@ -30,6 +33,13 @@ int main(int argc, const char *argv[]) {
 
     if (!fs::exists(uploadPath)) {
         if (!fs::create_directory(uploadPath)) {
+            LOG_INFO << Constants::SERVER_COULD_NOT_START_UPLOAD_DIR;
+            return -1;
+        }
+    }
+
+    if (!fs::exists(csvPath)) {
+        if (!fs::create_directory(csvPath)) {
             LOG_INFO << Constants::SERVER_COULD_NOT_START_UPLOAD_DIR;
             return -1;
         }
