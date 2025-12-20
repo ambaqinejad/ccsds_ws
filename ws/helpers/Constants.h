@@ -18,6 +18,7 @@ public:
     inline static const std::string SERVER_COULD_NOT_START_STRUCTURE = "Websocket server could not start because structure did not load.";
     inline static const std::string SERVER_COULD_NOT_START_PUBLIC_DIR = "Websocket server could not start because it can not create public directory.";
     inline static const std::string SERVER_COULD_NOT_START_UPLOAD_DIR = "Websocket server could not start because it can not create upload directory.";
+    inline static const std::string SERVER_COULD_NOT_START_CSV_DIR = "Websocket server could not start because it can not create csv directory.";
     inline static const std::string STRUCTURE_COULD_NOT_LOAD_FROM_DB_TO_RAM = "Structure could not load from DB to RAM!";
     inline static const std::string FAILED_TO_CREATE_OUTPUT_FILE = "Failed to create output file: ";
     inline static const std::string FAILED_TO_READ_CHUNK = "Failed to read chunk: ";

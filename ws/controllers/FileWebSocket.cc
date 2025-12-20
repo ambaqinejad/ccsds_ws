@@ -21,6 +21,9 @@ void FileWebSocket::handleConnectionClosed(const WebSocketConnectionPtr& wsConnP
     ClientCommunicationHelper::clients.erase(wsConnPtr);
     string uploadPath = EnvHelper::readEnvVariable("UPLOAD_DIR",
                           Constants::DEFAULT_UPLOAD_DIR);
+    string csvPath = EnvHelper::readEnvVariable("CSV_DIR",
+                                          Constants::DEFAULT_CSV_DIR);
     WorkingWithFileSystem::deleteFile(uploadPath, "");
+    WorkingWithFileSystem::deleteCSVs(csvPath, "");
     ClientCommunicationHelper::shouldStopProcessing = true;
 }

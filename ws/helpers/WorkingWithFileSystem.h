@@ -10,6 +10,8 @@
 class WorkingWithFileSystem {
 public:
     static bool deleteFile(const std::string & dirPath, const std::string & fileName);
+
+    static bool deleteCSVs(const std::string & dirPath, const std::string & fileName);
 };
 
 

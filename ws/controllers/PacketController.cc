@@ -219,10 +219,10 @@ void
 PacketController::downloadCSVFile(const HttpRequestPtr &req, function<void(const HttpResponsePtr &)> &&callback) {
     string sid = req->getParameter("sid");
     string fileUUID = req->getParameter("fileUUID");
-    string directoryBasePath = EnvHelper::readEnvVariable("DOCUMENT_ROOT",
-                                          Constants::DEFAULT_DOCUMENT_ROOT);
+    string csvPath = EnvHelper::readEnvVariable("CSV_DIR",
+                                          Constants::DEFAULT_CSV_DIR);
     std::string filename = "SID" + sid + ".csv";
-    std::string directoryPath = directoryBasePath + "/" + fileUUID;
+    std::string directoryPath = csvPath + "/" + fileUUID;
     if (!fs::exists(directoryPath)) {
         return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, "File not found.");
     }
@@ -233,7 +233,7 @@ PacketController::downloadCSVFile(const HttpRequestPtr &req, function<void(const
         LOG_ERROR << "Failed to open CSV file.";
         return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, "Failed to open CSV file.");
     }
-    WorkingWithFileSystem::deleteFile(directoryPath, filename);
+    WorkingWithFileSystem::deleteCSVs(directoryPath, filename);
     auto resp = HttpResponse::newFileResponse(filePath, filename);
     callback(resp);
 }

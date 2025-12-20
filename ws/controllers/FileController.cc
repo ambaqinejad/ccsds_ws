@@ -205,7 +205,7 @@ void FileController::deleteUploadedFile(const HttpRequestPtr &req,
         return;
     }
     string uploadPath = EnvHelper::readEnvVariable("UPLOAD_DIR",
-                          Constants::DEFAULT_UPLOAD_DIR);;
+                          Constants::DEFAULT_UPLOAD_DIR);
     WorkingWithFileSystem::deleteFile(uploadPath, fileUUID+".bin");
     Json::Value response;
     response["fileUUID"] = fileUUID;
