@@ -16,8 +16,6 @@ class PacketController : public drogon::HttpController<PacketController>
     ADD_METHOD_TO(PacketController::downloadCSVFile, "/downloadCSVFile", Get);
     ADD_METHOD_TO(PacketController::getSidsList, "/getSidsList/{fileUUID}", Get);
     ADD_METHOD_TO(PacketController::updatePacketStructure, "/updatePacketStructure", Get);
-
-
     METHOD_LIST_END
     // your declaration of processing function maybe like this:
     // void get(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback, int p1, std::string p2);

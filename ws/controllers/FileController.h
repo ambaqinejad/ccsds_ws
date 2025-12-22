@@ -9,7 +9,7 @@
 using namespace drogon;
 using namespace std;
 
-class FileController : public drogon::HttpController<FileController>
+class FileController final : public HttpController<FileController>
 {
   // this class is for working with file that is uploaded to the server for processing
   public:

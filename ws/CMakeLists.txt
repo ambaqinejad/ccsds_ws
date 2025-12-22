@@ -24,7 +24,6 @@ add_executable(${PROJECT_NAME} main.cc
         logics/CCSDS_Packet.h
         threads/ThreadedParser.cpp
         threads/ThreadedParser.h
-        logics/SIDs.h
         database/MongoDBHandler.cpp
         database/MongoDBHandler.h
         database/CSVHandler.cpp
