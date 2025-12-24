@@ -3,6 +3,8 @@
 #include <cstring>
 #include <iomanip>
 #include <arpa/inet.h>
+#include <trantor/utils/Logger.h>
+
 #include "database/MongoDBHandler.h"
 
 CCSDS_Packet::CCSDS_Packet() {
@@ -21,8 +23,8 @@ CCSDS_Packet::CCSDS_Packet() {
 }
 
 CCSDS_Packet CCSDS_Packet::deserialize_packet(vector<uint8_t> &chunk) {
+    CCSDS_Packet packet;
     try {
-        CCSDS_Packet packet;
         size_t offset = 0;
         size_t bitOffset = 0;
         parsedData = Json::objectValue;
@@ -31,8 +33,6 @@ CCSDS_Packet CCSDS_Packet::deserialize_packet(vector<uint8_t> &chunk) {
             uint16_t value;
             value = readBigEndian<uint16_t>(chunk.data() + offset);
             offset += sizeof(value);
-            std::cout << std::hex << std::setw(4) << std::setfill('0') << value << std::endl;
-            std::cout << std::hex << std::setw(4) << std::setfill('0') << ntohs(value) << std::endl;
             return value;
         };
 
@@ -40,10 +40,6 @@ CCSDS_Packet CCSDS_Packet::deserialize_packet(vector<uint8_t> &chunk) {
             uint32_t value;
             value = readBigEndian<uint32_t>(chunk.data() + offset);
             offset += sizeof(value);
-            // return ntohs(value);
-            std::cout << std::hex << std::setw(8) << std::setfill('0') << value << std::endl;
-            std::cout << std::hex << std::setw(8) << std::setfill('0') << ntohl(value) << std::endl;
-
             return value;
         };
 
@@ -51,10 +47,6 @@ CCSDS_Packet CCSDS_Packet::deserialize_packet(vector<uint8_t> &chunk) {
             uint64_t value;
             value = readBigEndian<uint64_t>(chunk.data() + offset);
             offset += sizeof(value);
-            // return ntohs(value);
-            std::cout << std::hex << std::setw(16) << std::setfill('0') << value << std::endl;
-            std::cout << std::hex << std::setw(16) << std::setfill('0') << __builtin_bswap64(value) << std::endl;
-
             return value;
         };
 
@@ -138,7 +130,6 @@ CCSDS_Packet CCSDS_Packet::deserialize_packet(vector<uint8_t> &chunk) {
                     return sid_val == packet.sid;
                 }
         );
-
         if (it == MongoDBHandler::ccsds_structure_.end()) {
             return packet;
         }
@@ -149,23 +140,22 @@ CCSDS_Packet CCSDS_Packet::deserialize_packet(vector<uint8_t> &chunk) {
             }
             nlohmann::ordered_json fieldData = topple.value();
             std::string fieldType = fieldData["type"];
-            auto handler = handlers.find(normalize(fieldType));
-            if (handler != handlers.end()) {
+            if (auto handler = handlers.find(normalize(fieldType)); handler != handlers.end()) {
                 bitOffset = 0;
                 handler->second(offset, fieldName);
             }
             if (fieldType.rfind("bit", 0) == 0) {
-                size_t bitCount = std::stoi(fieldType.substr(3));
+                const size_t bitCount = std::stoi(fieldType.substr(3));
                 if (bitCount < 1 || bitCount > 7)
                     throw std::runtime_error("bit count must be 1-7");
                 mapBitsToMeaningfulData(offset, bitOffset, bitCount, fieldName);
             }
         }
-
         packet.parsedData = parsedData;
         return packet;
     } catch (const std::exception &e) {
-        cout << e.what();
+        LOG_INFO << e.what();
+        return packet;
     }
 }
 
@@ -174,7 +164,7 @@ Json::Value CCSDS_Packet::toJson() const {
     std::stringstream ss;
     ss << std::hex << std::uppercase << std::setfill('0');
 
-    auto formatHex = [&](int value, int width = 2) {
+    auto formatHex = [&](const int value, const int width = 2) {
         ss.str("");
         ss.clear();
         ss << std::setw(width) << (value & 0xFF);
@@ -252,19 +242,6 @@ uint8_t CCSDS_Packet::extractBits(const uint8_t *data, size_t &byteOffset, size_
     return value;   // value is 0..127 for bitCount ≤ 7
 }
 
-//template<typename T>
-//void CCSDS_Packet::mapPayloadToMeaningfulData(size_t offset, const string &fieldName) {
-//    T value;
-//    std::memcpy(&value, payload.data() + offset, sizeof(T));
-//    if (isnan(value)) {
-//        value = 0;
-//    }
-////    std::cout << std::hex << std::setw(4) << std::setfill('0') << value << std::endl;
-////    std::cout << std::hex << std::setw(4) << std::setfill('0') << ntohs(value) << std::endl;
-//
-//    parsedData[fieldName] = value; // Implicitly constructs a FieldValue
-//}
-
 template<typename T>
 void CCSDS_Packet::mapPayloadToMeaningfulData(size_t offset, const std::string &fieldName) {
     T value = readBigEndian<T>(payload.data() + offset);
@@ -328,22 +305,3 @@ T CCSDS_Packet::readBigEndian(const uint8_t* data) {
 
     return value;
 }
-
-//template<typename T>
-//T CCSDS_Packet::readBigEndian(const uint8_t* data) {
-//    T value;
-//    std::memcpy(&value, data, sizeof(T));
-//
-//    // integers may need swapping (if CCSDS defines them as big-endian)
-//    if constexpr (std::is_integral_v<T> && sizeof(T) > 1) {
-//        uint8_t* p = reinterpret_cast<uint8_t*>(&value);
-//        std::reverse(p, p + sizeof(T));  // ONLY if integer is big-endian
-//    }
-//
-//    // floats/doubles stay AS-IS
-//    return value;
-//}
-
-
-
-

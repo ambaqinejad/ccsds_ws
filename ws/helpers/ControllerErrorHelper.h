@@ -13,6 +13,8 @@ class ControllerErrorHelper {
 public:
     static void sendError(std::function<void(const HttpResponsePtr &)> &&callback,
                           HttpStatusCode statusCode, const string& message);
+    static void sendJSONError(std::function<void(const HttpResponsePtr &)> &&callback,
+                          HttpStatusCode statusCode, const string& message);
 };
 
 

@@ -7,7 +7,6 @@ services:
       dockerfile: Dockerfile
     container_name: ccsds_ws
     working_dir: /home/ccsds_source/ccsds_final_project/ws/build
-    # entrypoint: /bin/true
     restart: always
     command: ["/home/ccsds_source/ccsds_final_project/ws/build/final-project"]
     ports:
@@ -15,20 +14,13 @@ services:
     networks:
       - ccsds_network
     environment:
-      - MONGODB_URI=mongodb://192.168.102.94:27017
+      - MONGODB_URI=mongodb://192.168.0.100:27017
       - DOCUMENT_ROOT=/home/ccsds_source/ccsds_final_project/ws/public
       - UPLOAD_DIR=/home/ccsds_source/ccsds_final_project/ws/public/uploads
       - CSV_DIR=/home/ccsds_source/ccsds_final_project/ws/public/csv
       - DB_NAME=Parser
       - PAYLOAD_COLLECTION_NAME=PayloadSID
       - DEFAULT_STRUCTURE_FILE_PATH=uploads/default_structure.json
-    deploy:
-      resources:
-        limits:
-          cpus: '6.0'
-    cpus: '6.0'
-    cpuset: "0-6"
-
 networks:
   ccsds_network:
     driver: bridge
