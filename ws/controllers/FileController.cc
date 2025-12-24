@@ -17,7 +17,7 @@
 void FileController::uploadFile(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
     try {
         if (MongoDBHandler::ccsds_structure_.empty()) {
-            return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, Constants::STRUCTURE_NOT_FOUND);
+            return ControllerErrorHelper::sendJSONError(std::move(callback), k404NotFound, Constants::STRUCTURE_NOT_FOUND);
         }
         MultiPartParser fileUpload;
         if (fileUpload.parse(req) != 0 || fileUpload.getFiles().size() != 1) {
@@ -58,6 +58,9 @@ std::unordered_map<std::string, int> FileController::fileUUIDToCorrespondingTota
 void FileController::startUpload(const HttpRequestPtr &req,
                                  std::function<void(const HttpResponsePtr &)> &&callback) {
     try {
+        if (MongoDBHandler::ccsds_structure_.empty()) {
+            return ControllerErrorHelper::sendJSONError(std::move(callback), k404NotFound, Constants::STRUCTURE_NOT_FOUND);
+        }
         Json::Value jsonBody = req->getJsonObject() ? *req->getJsonObject() : Json::Value();
         auto fileName = jsonBody["fileName"].asString();
         const auto totalChunks = jsonBody["totalChunks"].asString();

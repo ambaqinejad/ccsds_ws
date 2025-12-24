@@ -11,3 +11,13 @@ void ControllerErrorHelper::sendError(std::function<void(const HttpResponsePtr &
     resp->setBody(message);
     callback(resp);
 }
+
+void ControllerErrorHelper::sendJSONError(std::function<void(const HttpResponsePtr &)> &&callback,
+    const HttpStatusCode statusCode, const string &message) {
+    Json::Value msg;
+    msg["status"] = statusCode;
+    msg["message"] = message;
+    const auto resp = HttpResponse::newHttpJsonResponse(msg);
+    resp->setStatusCode(statusCode);
+    callback(resp);
+}

@@ -37,7 +37,7 @@ public:
     inline static const std::string ALL = "*";
 
     // MONGODB
-    inline static const std::string MONGODB_DEFAULT_URI = "mongodb://192.168.102.94:27017";
+    inline static const std::string MONGODB_DEFAULT_URI = "mongodb://192.168.0.100:27017";
     inline static const std::string DEFAULT_DB_NAME = "Parser";
     inline static const std::string DEFAULT_COLLECTION_NAME = "CCSDS_Structure";
     inline static const std::string DEFAULT_HISTORY_COLLECTION_NAME = "CCSDS_STRUCTURE_HISTORY";
