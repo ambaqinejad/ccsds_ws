@@ -8,7 +8,6 @@
 
 #include "helpers/ClientCommunicationHelper.h"
 #include <drogon/drogon.h>
-#include <chrono>
 #include "database/MongoDBHandler.h"
 
 using namespace std::chrono;

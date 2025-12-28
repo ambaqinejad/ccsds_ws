@@ -22,8 +22,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(${PROJECT_NAME} main.cc
         logics/CCSDS_Packet.cpp
         logics/CCSDS_Packet.h
-        threads/ThreadedParser.cpp
-        threads/ThreadedParser.h
         database/MongoDBHandler.cpp
         database/MongoDBHandler.h
         database/CSVHandler.cpp
@@ -36,8 +34,6 @@ add_executable(${PROJECT_NAME} main.cc
         helpers/UIDGeneratorHelper.h
         helpers/ControllerErrorHelper.cpp
         helpers/ControllerErrorHelper.h
-        helpers/StructureHelper.cpp
-        helpers/StructureHelper.h
         helpers/EnvHelper.h
         helpers/Constants.h
         helpers/AppConfiguration.cpp

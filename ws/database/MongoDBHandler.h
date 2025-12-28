@@ -18,10 +18,10 @@ class MongoDBHandler {
 public:
     MongoDBHandler();
 
-    bool insertPacket(const CCSDS_Packet &packet);
-    bool insertAllPackets(const std::vector<CCSDS_Packet>& packets);
-    bool insertPacketsBulk(const std::vector<CCSDS_Packet>& packets, size_t batchSize = 1000);
-    void insertStructure(nlohmann::ordered_json json);
+    bool insertPacket(const CCSDS_Packet &packet) const;
+    bool insertAllPackets(const std::vector<CCSDS_Packet>& packets) const;
+    static bool insertPacketsBulk(const std::vector<CCSDS_Packet>& packets, size_t batchSize = 1000);
+    void insertStructure(nlohmann::ordered_json json) const;
     bool loadStructure();
     static nlohmann::ordered_json ccsds_structure_;
 

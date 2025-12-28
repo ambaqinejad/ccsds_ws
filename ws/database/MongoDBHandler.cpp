@@ -20,7 +20,7 @@ using namespace std::chrono;
 
 MongoDBHandler::MongoDBHandler() {
     static mongocxx::instance instance{}; // Required once per application
-    std::string uri = EnvHelper::readEnvVariable("MONGODB_URI",
+    const std::string uri = EnvHelper::readEnvVariable("MONGODB_URI",
                                  Constants::MONGODB_DEFAULT_URI);
     std::string database_name = EnvHelper::readEnvVariable("DB_NAME",
                                  Constants::DEFAULT_DB_NAME);
@@ -31,27 +31,25 @@ MongoDBHandler::MongoDBHandler() {
 
 
 
-bool MongoDBHandler::insertPacket(const CCSDS_Packet &packet) {
+bool MongoDBHandler::insertPacket(const CCSDS_Packet &packet) const {
     // Serialize the extended_payload
     try {
-        auto start = high_resolution_clock::now();
-        mongocxx::collection collection;
-        // std::string collection_name = "SID" + std::to_string(packet.sid);
-        std::string collection_name = EnvHelper::readEnvVariable("PAYLOAD_COLLECTION_NAME",
+        const auto start = high_resolution_clock::now();
+        const std::string collection_name = EnvHelper::readEnvVariable("PAYLOAD_COLLECTION_NAME",
                           Constants::DEFAULT_PAYLOAD_COLLECTION_NAME);;
-        collection = database_[collection_name];
+        mongocxx::collection collection = database_[collection_name];
         bsoncxx::builder::basic::document doc{};
         insertHeader(doc, packet);
 
-        Json::StreamWriterBuilder writer;
-        std::string jsonStr = Json::writeString(writer, packet.parsedData);
+        const Json::StreamWriterBuilder writer;
+        const std::string jsonStr = Json::writeString(writer, packet.parsedData);
 
         // Step 3: Parse JSON string into BSON
         bsoncxx::document::value subDocument = bsoncxx::from_json(jsonStr);
         doc.append(bsoncxx::builder::basic::kvp("Fields", subDocument));
         collection.insert_one(doc.view());
-        auto end = high_resolution_clock::now();
-        auto duration_us = duration_cast<microseconds>(end - start);  // microseconds
+        const auto end = high_resolution_clock::now();
+        const auto duration_us = duration_cast<microseconds>(end - start);  // microseconds
         LOG_INFO << "Packet inserted successfully. Time (microseconds): " << duration_us.count() << " µs";
         return true;
     } catch (const exception &e) {
@@ -77,7 +75,7 @@ void MongoDBHandler::insertHeader(bsoncxx::builder::basic::document &document, c
     document.append(bsoncxx::builder::basic::kvp(Constants::PACKET_HEADER_KEY_STATION_DATE_TIME, bsoncxx::types::b_date{chrono::system_clock::now()}));
 }
 
-void MongoDBHandler::insertStructure(nlohmann::ordered_json json) {
+void MongoDBHandler::insertStructure(nlohmann::ordered_json json) const {
     mongocxx::collection collection = database_[Constants::DEFAULT_COLLECTION_NAME];
     collection.drop(); // Clear previous data
 
@@ -98,22 +96,20 @@ using bsoncxx::builder::stream::document;
 using bsoncxx::builder::stream::finalize;
 nlohmann::ordered_json MongoDBHandler::ccsds_structure_;
 bool MongoDBHandler::loadStructure() {
-    mongocxx::collection history_collection;
-    history_collection = database_[Constants::DEFAULT_HISTORY_COLLECTION_NAME];
+    mongocxx::collection history_collection = database_[Constants::DEFAULT_HISTORY_COLLECTION_NAME];
     auto filter = document{} << "is_current" << true << finalize;
-    auto result = history_collection.find_one(filter.view());
-    if (result && (*result)["collection_name"]) {
+    if (auto result = history_collection.find_one(filter.view()); result && (*result)["collection_name"]) {
         LOG_INFO << "Name: "
                  << std::string{(*result)["collection_name"].get_string().value};
         mongocxx::collection structure_collection = database_[(*result)["collection_name"].get_string().value];
         auto cursor = structure_collection.find({});
-        MongoDBHandler::ccsds_structure_ = nlohmann::ordered_json::array();
+        ccsds_structure_ = nlohmann::ordered_json::array();
         for (auto &&doc: cursor) {
             std::string json_str = bsoncxx::to_json(doc);
             nlohmann::ordered_json j = nlohmann::ordered_json::parse(json_str);
-            MongoDBHandler::ccsds_structure_.push_back(j);
+            ccsds_structure_.push_back(j);
         }
-        if (!MongoDBHandler::ccsds_structure_.empty()) {
+        if (!ccsds_structure_.empty()) {
             LOG_INFO << Constants::STRUCTURE_LOADED_FROM_DB_TO_RAM;
             return true;
         }
@@ -208,7 +204,7 @@ bool MongoDBHandler::insertPacketsBulk(const vector<CCSDS_Packet> &packets, size
 //    }
 }
 
-bool MongoDBHandler::insertAllPackets(const vector<CCSDS_Packet> &packets) {
+bool MongoDBHandler::insertAllPackets(const vector<CCSDS_Packet> &packets) const {
     try {
         auto start = high_resolution_clock::now();
 
@@ -235,8 +231,8 @@ bool MongoDBHandler::insertAllPackets(const vector<CCSDS_Packet> &packets) {
             collection.insert_many(documents);
         }
 
-        auto end = high_resolution_clock::now();
-        auto duration = duration_cast<milliseconds>(end - start);
+        const auto end = high_resolution_clock::now();
+        const auto duration = duration_cast<milliseconds>(end - start);
 
         LOG_INFO << "Inserted " << packets.size() << " packets across "
                  << documentsByCollection.size() << " collections in "

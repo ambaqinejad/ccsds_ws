@@ -2,6 +2,8 @@
 
 #include <drogon/WebSocketController.h>
 
+#include "helpers/Constants.h"
+
 using namespace drogon;
 
 class FileWebSocket : public drogon::WebSocketController<FileWebSocket>
@@ -15,6 +17,6 @@ class FileWebSocket : public drogon::WebSocketController<FileWebSocket>
     void handleConnectionClosed(const WebSocketConnectionPtr&) override;
     WS_PATH_LIST_BEGIN
     // list path definitions here;
-    WS_PATH_ADD("/offline-parser-ws", Get);
+    WS_PATH_ADD(Constants::WEB_SOCKET, Get);
     WS_PATH_LIST_END
 };

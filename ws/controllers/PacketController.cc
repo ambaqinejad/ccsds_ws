@@ -120,13 +120,13 @@ void PacketController::persistAllPacketsInMongoDB(const HttpRequestPtr &req,
             }
 
         } catch (const std::exception& e) {
-            LOG_ERROR << "Error in MongoDB persistence: " << e.what();
+            LOG_ERROR << Constants::ERROR_IN_MONGO_DB_PERSISTENCE << e.what();
             ClientCommunicationHelper::notifyClients(-1);
         }
     }).detach();
 
     Json::Value pktJson;
-    pktJson["message"] = "Packets insertion is in progress.";
+    pktJson["message"] = Constants::PACKET_INSERTION_IS_IN_PROGRESS;
     pktJson["packetCount"] = static_cast<Json::UInt64>(packets->size());
     auto resp = HttpResponse::newHttpJsonResponse(pktJson);
     callback(resp);
@@ -142,12 +142,12 @@ void PacketController::persistAllPacketsInMongoDBBasedOnSID(const HttpRequestPtr
     }
     catch (const std::exception &e) {
         return ControllerErrorHelper::sendError(std::move(callback), k400BadRequest,
-                                                "Invalid sid parameter.");
+                                                Constants::INVALID_SID_PARAMETER);
     }
     std::string fileUUID = (*req->getJsonObject())["fileUUID"].asString();
     auto it = CCSDSPacketFileHelper::uuidToSavedPacketsMapper.find(fileUUID);
     if (it == CCSDSPacketFileHelper::uuidToSavedPacketsMapper.end()) {
-        return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, "File UUID not found.");
+        return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, Constants::FILE_UUID_NOT_FOUND);
     }
 
     const std::vector<CCSDS_Packet> &allPackets = it->second;
@@ -175,7 +175,7 @@ void PacketController::persistAllPacketsInMongoDBBasedOnSID(const HttpRequestPtr
         }
     }).detach();
     Json::Value pktJson;
-    pktJson["message"] = "Packets insertion is in progress.";
+    pktJson["message"] = Constants::PACKET_INSERTION_IS_IN_PROGRESS;
     auto resp = HttpResponse::newHttpJsonResponse(pktJson);
     callback(resp);
 }
@@ -210,7 +210,7 @@ void PacketController::persistAllPacketsInCSVFile(const HttpRequestPtr &req,
 
     }).detach();
     Json::Value pktJson;
-    pktJson["message"] = "Packets insertion is in progress.";
+    pktJson["message"] = Constants::PACKET_INSERTION_IS_IN_PROGRESS;
     auto resp = HttpResponse::newHttpJsonResponse(pktJson);
     callback(resp);
 }
@@ -224,14 +224,13 @@ PacketController::downloadCSVFile(const HttpRequestPtr &req, function<void(const
     std::string filename = "SID" + sid + ".csv";
     std::string directoryPath = csvPath + "/" + fileUUID;
     if (!fs::exists(directoryPath)) {
-        return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, "File not found.");
+        return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, Constants::FILE_NOT_FOUND);
     }
     std::string filePath = directoryPath + "/" + filename;
     // Open file in append mode
-    std::ofstream csvFile(filePath, std::ios::app);
-    if (!csvFile.is_open()) {
-        LOG_ERROR << "Failed to open CSV file.";
-        return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, "Failed to open CSV file.");
+    if (std::ofstream csvFile(filePath, std::ios::app); !csvFile.is_open()) {
+        LOG_ERROR << Constants::FAILED_TO_OPEN_CSV_FILE;
+        return ControllerErrorHelper::sendError(std::move(callback), k404NotFound, Constants::FAILED_TO_OPEN_CSV_FILE);
     }
     auto resp = HttpResponse::newFileResponse(filePath, filename);
     callback(resp);
@@ -290,7 +289,7 @@ void PacketController::persistAllPacketsInCSVFileBasedOnSID(const HttpRequestPtr
     }
     catch (const std::exception &e) {
         return ControllerErrorHelper::sendError(std::move(callback), k400BadRequest,
-                                                "Invalid sid parameter.");
+                                                Constants::INVALID_SID_PARAMETER);
     }
     std::string fileUUID = (*req->getJsonObject())["fileUUID"].asString();
     auto it = CCSDSPacketFileHelper::uuidToSavedPacketsMapper.find(fileUUID);
@@ -328,7 +327,7 @@ void PacketController::persistAllPacketsInCSVFileBasedOnSID(const HttpRequestPtr
 
     }).detach();
     Json::Value pktJson;
-    pktJson["message"] = "Packets are inserting. Check web socket.";
+    pktJson["message"] = Constants::PACKETS_INSERTING_WEB_SOCKET;
     pktJson["link"] = req->getLocalAddr().toIpPort() + "/downloadCSVFile?fileUUID=" + fileUUID + "&sid=" + sidStr;
     auto resp = HttpResponse::newHttpJsonResponse(pktJson);
     callback(resp);
@@ -339,12 +338,12 @@ PacketController::updatePacketStructure(const HttpRequestPtr &req, function<void
     MongoDBHandler dbHandler;
     Json::Value resultJson;
     if (!dbHandler.loadStructure()) {
-        LOG_INFO << "Structure did not load and can not be updated.";
-        resultJson["message"] = "Packets are inserting. Check web socket.";
+        LOG_INFO << Constants::STRUCTURE_COULD_NOT_LOAD_FROM_DB_TO_RAM;
+        resultJson["message"] = Constants::PACKETS_INSERTING_WEB_SOCKET;
         auto resp = HttpResponse::newHttpJsonResponse(resultJson);
         return callback(resp);
     }
-    resultJson["message"] = "Structure updated successfully.";
+    resultJson["message"] = Constants::STRUCTURE_UPDATED_SUCCESSFULLY;
     auto resp = HttpResponse::newHttpJsonResponse(resultJson);
     callback(resp);
 }

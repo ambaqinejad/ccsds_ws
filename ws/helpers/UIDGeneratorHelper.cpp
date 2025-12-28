@@ -13,9 +13,8 @@ std::string UIDGeneratorHelper::generateUID() {
     for (int i = 0; i < 32; ++i) {
         ss << std::hex << dis(gen);
     }
-
-    auto now = std::chrono::system_clock::now();
-    auto timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+    const auto now = std::chrono::system_clock::now();
+    const auto timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
     std::string uuid = std::to_string(timestamp) + ss.str();
     return uuid;
 }

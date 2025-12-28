@@ -17,9 +17,8 @@ bool WorkingWithFileSystem::deleteFile(const std::string &dirPath, const std::st
     }
     fs::path dir = dirPath;
     const fs::path file = fileName;
-    const std::string filePath = (fs::path(dir) / file).string();
 
-    if (fs::exists(filePath) && fs::is_regular_file(filePath)) {
+    if (const std::string filePath = (fs::path(dir) / file).string(); fs::exists(filePath) && fs::is_regular_file(filePath)) {
         fs::remove(filePath);
         return true;
     }
@@ -36,9 +35,8 @@ bool WorkingWithFileSystem::deleteCSVs(const std::string &dirPath, const std::st
     }
     fs::path dir = dirPath;
     const fs::path file = fileName;
-    std::string filePath = (fs::path(dir) / file).string();
 
-    if (fs::exists(filePath) && fs::is_regular_file(filePath)) {
+    if (const std::string filePath = (fs::path(dir) / file).string(); fs::exists(filePath) && fs::is_regular_file(filePath)) {
         fs::remove(filePath);
         return true;
     }

@@ -1,5 +1,4 @@
 #include "helpers/AppConfiguration.h"
-#include "helpers/StructureHelper.h"
 
 using namespace std;
 

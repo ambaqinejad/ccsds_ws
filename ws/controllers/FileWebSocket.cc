@@ -11,13 +11,13 @@ void FileWebSocket::handleNewMessage(const WebSocketConnectionPtr& wsConnPtr, st
 void FileWebSocket::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr& wsConnPtr)
 {
     // write your application logic here
-    LOG_INFO << "New Web Socket Connection";
+    LOG_INFO << Constants::WEB_SOCKET_CONNECTION;
     ClientCommunicationHelper::clients.insert(wsConnPtr);
     ClientCommunicationHelper::shouldStopProcessing = false;
 }
 
 void FileWebSocket::handleConnectionClosed(const WebSocketConnectionPtr& wsConnPtr) {
-    LOG_INFO << "Socket closed";
+    LOG_INFO << Constants::WEB_SOCKET_CLOSING;
     ClientCommunicationHelper::clients.erase(wsConnPtr);
     string uploadPath = EnvHelper::readEnvVariable("UPLOAD_DIR",
                           Constants::DEFAULT_UPLOAD_DIR);

@@ -23,7 +23,7 @@ bool CSVHandler::insertPacket(const CCSDS_Packet &packet, const string& fileUUID
     std::string directoryPath = csvPath + "/" + fileUUID;
     if (!fs::exists(directoryPath)) {
         if (!fs::create_directory(directoryPath)) {
-            LOG_INFO << "Failed to create directory: " << directoryPath;
+            LOG_ERROR << Constants::FAILED_TO_CREATE_DIRECTORY << directoryPath;
             return false;
         }
     }
@@ -32,14 +32,14 @@ bool CSVHandler::insertPacket(const CCSDS_Packet &packet, const string& fileUUID
     // Open file in append mode
     std::ofstream csvFile(filePath, std::ios::app);
     if (!csvFile.is_open()) {
-        std::cerr << "Failed to open CSV file." << std::endl;
+        LOG_ERROR << Constants::FAILED_TO_OPEN_CSV_FILE;
         return false;
     }
 
     // Collect all keys from parsedData
     std::vector<std::string> keys;
     if (!packet.parsedData.isObject()) {
-        std::cerr << "parsedData is not an object!" << std::endl;
+        LOG_ERROR << Constants::PARSED_DATA_IS_NOT_AN_OBJECT;
         return false;
     }
     keys = packet.parsedData.getMemberNames();
@@ -51,9 +51,18 @@ bool CSVHandler::insertPacket(const CCSDS_Packet &packet, const string& fileUUID
 
     if (isEmpty) {
         // Write header
-        csvFile << "main_frame_header,packet_id,packet_sequence_control,packet_length,"
-                   "data_field_header,service_type,sub_service_type,sid,timestamp,"
-                   "crc_fail_upload_map,flash_address";
+        csvFile <<    Constants::PACKET_HEADER_KEY_MAIN_FRAME_HEADER + ","
+                    + Constants::PACKET_HEADER_KEY_PACKET_ID + ","
+                    + Constants::PACKET_HEADER_KEY_PACKET_SEQUENCE_CONTROL + ","
+                    + Constants::PACKET_HEADER_KEY_PACKET_LENGTH + ","
+                    + Constants::PACKET_HEADER_KEY_DATA_FIELD_HEADER + ","
+                    + Constants::PACKET_HEADER_KEY_SERVICE_TYPE + ","
+                    + Constants::PACKET_HEADER_KEY_SUB_SERVICE_TYPE + ","
+                    + Constants::PACKET_HEADER_KEY_SID + ","
+                    + Constants::PACKET_HEADER_KEY_TIMESTAMP + ","
+                    + Constants::PACKET_HEADER_KEY_CRC_FAIL_UPLOAD_MAP + ","
+                    + Constants::PACKET_HEADER_KEY_FLASH_ADDRESS;
+
         for (const auto& key : keys) {
             csvFile << ',' << key;
         }
