@@ -14,7 +14,7 @@
 #include "helpers/EnvHelper.h"
 #include "helpers/Constants.h"
 #include <chrono>
-
+#include <bsoncxx/builder/stream/document.hpp>
 #include "helpers/ClientCommunicationHelper.h"
 using namespace std::chrono;
 

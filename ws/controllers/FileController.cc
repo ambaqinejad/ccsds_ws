@@ -21,7 +21,7 @@ void FileController::uploadFile(const HttpRequestPtr &req, std::function<void(co
         }
         MultiPartParser fileUpload;
         if (fileUpload.parse(req) != 0 || fileUpload.getFiles().size() != 1) {
-            auto resp = HttpResponse::newHttpResponse();
+            const auto resp = HttpResponse::newHttpResponse();
             resp->setBody(Constants::MUST_ONLY_BE_ONE_FILE);
             resp->setStatusCode(k403Forbidden);
             callback(resp);
@@ -45,10 +45,8 @@ void FileController::uploadFile(const HttpRequestPtr &req, std::function<void(co
         LOG_INFO << Constants::UPLOADED_FILE_HAVE_BEEN_SAVED_TO_THE + uploadPath;
         callback(resp);
     } catch (const std::exception &e) {
-        const auto resp = HttpResponse::newHttpResponse();
-        resp->setBody(e.what());
-        resp->setStatusCode(k500InternalServerError);
-        callback(resp);
+        ControllerErrorHelper::sendError(std::move(callback), k400BadRequest,
+                                         e.what());
     }
 }
 
@@ -77,7 +75,7 @@ void FileController::startUpload(const HttpRequestPtr &req,
         callback(resp);
     } catch (const std::exception &e) {
         ControllerErrorHelper::sendError(std::move(callback), k500InternalServerError,
-                                         Constants::ERROR_IN_STARTING_UPLOAD);
+                                         Constants::ERROR_IN_STARTING_UPLOAD + e.what());
     }
 }
 
@@ -123,7 +121,7 @@ void FileController::uploadChunk(const HttpRequestPtr &req, std::function<void(c
         response["status"] = "success";
         response["chunkIndex"] = chunkIndex;
         response["fileUUID"] = fileUUID;
-        if (FileController::fileUUIDToCorrespondingTotalChunks_[fileUUID] - 1 == chunkIndex) {
+        if (fileUUIDToCorrespondingTotalChunks_[fileUUID] - 1 == chunkIndex) {
             response["isCompleted"] = true;
         }
         const auto resp = HttpResponse::newHttpJsonResponse(response);
@@ -203,7 +201,7 @@ void FileController::finalizeUpload(const HttpRequestPtr &req,
         response["fileUUID"] = fileUUID;
         response["message"] = Constants::FILE_UPLOAD_COMPLETED_AND_PROCESSING_STARTED;
 
-        auto resp = HttpResponse::newHttpJsonResponse(response);
+        const auto resp = HttpResponse::newHttpJsonResponse(response);
         callback(resp);
     } catch (const std::exception &e) {
         ControllerErrorHelper::sendError(std::move(callback), k500InternalServerError,
@@ -215,21 +213,21 @@ void FileController::deleteUploadedFile(const HttpRequestPtr &req,
                                         std::function<void(const HttpResponsePtr &)> &&callback) {
     try {
         Json::Value jsonBody = req->getJsonObject() ? *req->getJsonObject() : Json::Value();
-        std::string fileUUID = jsonBody["fileUUID"].asString();
-        if (fileUUID == "") {
-            auto resp = HttpResponse::newHttpResponse();
+        const std::string fileUUID = jsonBody["fileUUID"].asString();
+        if (fileUUID.empty()) {
+            const auto resp = HttpResponse::newHttpResponse();
             resp->setBody(Constants::REQUIRED_FIELDS);
             resp->setStatusCode(k404NotFound);
             callback(resp);
             return;
         }
-        string uploadPath = EnvHelper::readEnvVariable("UPLOAD_DIR",
+        const string uploadPath = EnvHelper::readEnvVariable("UPLOAD_DIR",
                                                        Constants::DEFAULT_UPLOAD_DIR);
         WorkingWithFileSystem::deleteFile(uploadPath, fileUUID + ".bin");
         Json::Value response;
         response["fileUUID"] = fileUUID;
         response["message"] = Constants::FILE_DELETED;
-        auto resp = HttpResponse::newHttpJsonResponse(response);
+        const auto resp = HttpResponse::newHttpJsonResponse(response);
         callback(resp);
     } catch (const std::exception &e) {
         ControllerErrorHelper::sendError(std::move(callback), k500InternalServerError,

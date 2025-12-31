@@ -25,7 +25,6 @@ void CCSDSPacketFileHelper::processFile(const string &filePath, const std::strin
         file.seekg(0, ios::end);
         size_t fileSize = file.tellg();
         file.seekg(0, ios::beg);
-
         // Allocate buffer and read data
         std::vector<unsigned char> buffer(fileSize);
         if (!file.read(reinterpret_cast<char *>(buffer.data()), fileSize)) {

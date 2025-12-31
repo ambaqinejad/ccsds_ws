@@ -10,10 +10,7 @@
 class CSVHandler {
 public:
     CSVHandler();
-
     static bool insertPacket(const CCSDS_Packet &packet, const string& fileUUID);
-
-
 private:
     std::string csvFilePath;
 };
