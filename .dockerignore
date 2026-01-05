@@ -1,5 +1,5 @@
 *.json
 *.tar
-public
-cmake-build-debug
-.idea
+/ws/public
+/ws/cmake-build-debug
+/ws/.idea
