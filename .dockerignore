@@ -1,2 +1,5 @@
 *.json
 *.tar
+public
+cmake-build-debug
+.idea
